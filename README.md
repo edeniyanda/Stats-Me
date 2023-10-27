@@ -1,6 +1,6 @@
-# StatMaster - Statistical Calculator
+# Stats Me - Statistical Calculator
 
-StatMaster is a Python-based statistical calculator with a graphical user interface built using PyQt5. This tool allows you to estimate class boundaries, create frequency distributions, calculate mean, variance, and standard deviation, all within an intuitive and easy-to-use application.
+Stats Me is a Python-based statistical calculator with a graphical user interface built using PyQt5. This tool allows you to estimate class boundaries, create frequency distributions, calculate mean, variance, and standard deviation, all within an intuitive and easy-to-use application.
 
 ## Features
 
