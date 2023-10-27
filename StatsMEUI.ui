@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>table.png</normaloff>table.png</iconset>
+    <normaloff>images/table.png</normaloff>images/table.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="pushButton_estimatefx">
