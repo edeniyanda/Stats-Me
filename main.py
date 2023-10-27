@@ -1,0 +1,262 @@
+import sys
+import os
+from functools import partial
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMainWindow, QApplication, QTableWidgetItem, QMessageBox, QLabel, QPushButton, QSpinBox, QTableWidget, QPushButton
+from PyQt5.QtGui import QFont, QPixmap
+from PyQt5.uic import loadUi
+from qdarktheme import setup_theme, enable_hi_dpi
+
+     
+
+
+
+
+def get_resource_path(relative_path):
+    """
+    Get the absolute path to the resource based on whether the script is running as an executable or as a script.
+    """
+    if getattr(sys, 'frozen', False):
+        # Running as an executable, use sys._MEIPASS to access bundled files
+        base_path = sys._MEIPASS
+    else:
+        # Running as a script, use the script's directory
+        base_path = os.path.dirname(os.path.abspath(__file__))
+    
+    resource_path = os.path.join(base_path, relative_path)
+    return resource_path
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        QMainWindow.__init__(self)
+        self.ui = loadUi(get_resource_path('StatsMEUI.ui'),self)
+        # dark_stylesheet = qdarkstyle.load_stylesheet_pyqt5()
+        # self.setStyleSheet(dark_stylesheet)
+        self.spinBox_dp.setValue(2)
+        self.dp = self.spinBox_dp.value()
+        self.handleButtonPressed()
+        self.handleUiChanges()
+        self.pushButton_estimatefx.setEnabled(False)
+        self.pushButton_finally.setEnabled(False)
+        self.mean = 0
+        self.variance = 0
+        self.sd = 0
+        
+        
+    def handleUiChanges(self):
+        self.spinBox_dp.valueChanged.connect(self.dp_changed)
+        
+        ...
+    def handleButtonPressed(self):
+        self.pushButton_addRow.clicked.connect(self.addNewRow)
+        self.pushButton_estimate.clicked.connect(self.estimate)
+        self.pushButton_estimatefx.clicked.connect(self.checkFStatus)
+        self.pushButton_estimateMean.clicked.connect(self.estimateMean)
+        self.pushButton_estimateDFM.clicked.connect(self.estimateD)
+        self.pushButton_finally.clicked.connect(self.finishAll)
+        ...
+        
+    def addNewRow(self):
+        noOfRow = self.tableWidget.rowCount()
+        self.tableWidget.insertRow(noOfRow)
+        
+        ...
+    def comparedecimal(self, num):
+        if "." in num:
+            oldLength = len(num[num.index(".")+1:])
+            if (oldLength < self.dp):
+                noOfZeros = self.dp - oldLength
+                zerosToAdd = "0" * noOfZeros
+                return num + zerosToAdd
+            else:
+                return num
+        else:
+            return num
+                
+            
+    
+        
+    def estimate(self):
+        
+        classBoundaryLsit = []
+        
+        for i in range(1):
+            try:
+                value = self.tableWidget.item(i, 0).text()
+                value = value.split("-")
+                value = [i.strip(" ") for i in value]
+                a, b = int(value[0]), int(value[1])
+                diff = (b - a) + 1
+            except AttributeError:
+                QMessageBox.critical(self, "Invalid Input", "Class Group cannot be Empty")
+                return
+            except ValueError:
+                QMessageBox.critical(self, "Invalid Input", "Class Group should be in the format\n'A - B' where A is less than B and\nboth variables are integers" )
+                return
+            except IndexError:
+                QMessageBox.critical(self, "Invalid Input - Wrong Format", "Class Group should be in the format\n'A - B' where A is less than B and\nboth variables are integers" )
+                return
+                
+        
+        noOfRow = self.tableWidget.rowCount()
+        for i in range(noOfRow - 1):
+            i += 1
+            value = self.tableWidget.item(i - 1, 0).text()
+            value = value.split("-")
+            value = [n.strip(" ") for n in value]
+            a, b = int(value[0]), int(value[1])
+            ans = (b+1, b + diff)
+            self.tableWidget.setItem( i, 0, QTableWidgetItem(str(ans[0]) + " - " + str(ans[1])))
+                
+        for i in range(noOfRow):
+            value = self.tableWidget.item(i, 0).text()
+            value = value.split("-")
+            value = [n.strip(" ") for n in value]
+            a, b = int(value[0]), int(value[1])
+            if a == 0:
+                a = 0.5
+            ans = (a - 0.5, b + 0.5)
+            
+            self.tableWidget.setItem( i, 1, QTableWidgetItem(str(ans[0]) + " - " + str(ans[1])))
+            ...
+
+        for i in range(noOfRow):
+            value = self.tableWidget.item(i, 0).text()
+            value = value.split("-")
+            value = [n.strip(" ") for n in value]
+            a, b = int(value[0]), int(value[1])
+            ans = (a + b) / 2
+            self.tableWidget.setItem( i, 2, QTableWidgetItem(str(ans)))
+          
+        # Enable Button that will estiamte fx
+        self.pushButton_estimatefx.setEnabled(True)
+
+            
+    def checkFStatus(self):
+        noOfRow = self.tableWidget.rowCount()
+
+        freqList = []
+        for i in range(noOfRow):
+            try:
+                value = self.tableWidget.item(i, 3).text()
+                if "." in value:
+                    QMessageBox.critical(self, "Error", f"Frequency value in row {i+1} must be an integer not a floating point number")
+                    self.tableWidget.setItem(i, 3, QTableWidgetItem(""))    
+                    return    
+                ans = float(value)
+            except AttributeError:
+                QMessageBox.critical(self, "Error", f"Frequency value in row {i+1} is Empty")      
+                return 
+            except ValueError:
+                QMessageBox.critical(self, "Error", f"'{value}' is not an integer\nFrequency at row {i+1} must be an integer")      
+                return 
+            
+            estimatefx = ans * float(self.tableWidget.item(i, 2).text())
+            numResult = partial(self.comparedecimal, str(estimatefx))
+            self.tableWidget.setItem(i, 4, QTableWidgetItem(numResult()))
+            
+        # Enable Extimate Mean Button
+        self.pushButton_estimateMean.setEnabled(True)
+            
+   
+    def estimateMean(self):
+        self.checkFStatus()
+        sumOfX = 0.0
+        sumOfFx = 0.0
+        
+        noOfRow = self.tableWidget.rowCount()
+        
+        for i in range(noOfRow):         
+            value = float(self.tableWidget.item(i, 3).text())
+            sumOfX += value
+        for i in range(noOfRow):         
+            value = float(self.tableWidget.item(i, 4).text())
+            sumOfFx += value
+            
+        self.mean = sumOfFx / sumOfX
+        rawMean = str(round(self.mean, self.dp))
+        meanToDisplay = partial(self.comparedecimal, rawMean)
+        self.mean_label.setText(meanToDisplay())
+        self.pushButton_estimateDFM.setEnabled(True)
+        
+    def dp_changed(self):
+        self.dp = int(self.spinBox_dp.value())
+        for j in range(3,8):
+            if self.tableWidget.item(0, j) is None:
+                return
+        try:
+            self.estimateMean()
+            self.estimateD()
+            self.finishAll()            
+        except:
+            ...
+        
+        ...
+    
+    def estimateD(self):
+        noOfRow = self.tableWidget.rowCount()
+        for i in range(noOfRow):
+            value = float(self.tableWidget.item(i, 2).text())
+            ans = value - self.mean
+            dval = round(ans, self.dp)
+            dvalToDisplay = partial(self.comparedecimal, str(dval))
+            self.tableWidget.setItem(i, 5, QTableWidgetItem(dvalToDisplay()))
+
+        self.pushButton_finally.setEnabled(True)
+            
+    def estimateD2(self):
+        noOfRow = self.tableWidget.rowCount()
+        for i in range(noOfRow):
+            value = float(self.tableWidget.item(i, 5).text())
+            dval = value * value
+            dval = round(dval, self.dp)
+            dvalToDisplay = partial(self.comparedecimal, str(dval))
+            self.tableWidget.setItem(i, 6, QTableWidgetItem(dvalToDisplay()))
+            
+    def estimateFD2(self):
+        noOfRow = self.tableWidget.rowCount()
+        for i in range(noOfRow):
+            value = float(self.tableWidget.item(i, 6).text())
+            value2 = float(self.tableWidget.item(i, 3).text())
+            dval = value * value2
+            dval = round(dval, self.dp)
+            dvalToDisplay = partial(self.comparedecimal, str(dval))
+            self.tableWidget.setItem(i, 7, QTableWidgetItem(dvalToDisplay()))
+    
+    def estimateVariance(self):
+        noOfRow = self.tableWidget.rowCount()
+        sumall = 0
+        sumfreq = 0
+        for i in range(noOfRow):
+            value = float(self.tableWidget.item(i, 7).text())
+            sumall += value
+            
+        for i in range(noOfRow):
+            value = float(self.tableWidget.item(i, 3).text())
+            sumfreq += value
+            
+        self.variance = sumall / sumfreq
+        
+        self.variance_label.setText(str(round(self.variance, self.dp)))
+        
+        self.sd = self.variance ** 0.5
+        
+        varVal = round(self.sd, self.dp)
+        varianceToDisplay = partial(self.comparedecimal, str(varVal))
+        self.sd_label.setText(varianceToDisplay()) 
+           
+
+        
+    def finishAll(self):
+        self.estimateD2()
+        self.estimateFD2()
+        self.estimateVariance()
+    
+enable_hi_dpi()
+app = QApplication(sys.argv)
+setup_theme()
+mainWindow = MainWindow()
+mainWindow.show()
+sys.exit(app.exec_())
+
