@@ -41,7 +41,6 @@ class MainWindow(QMainWindow):
     def handleUiChanges(self):
         self.spinBox_dp.valueChanged.connect(self.dp_changed)
         
-        ...
     def handleButtonPressed(self):
         self.pushButton_addRow.clicked.connect(self.addNewRow)
         self.pushButton_estimate.clicked.connect(self.estimate)
@@ -49,13 +48,11 @@ class MainWindow(QMainWindow):
         self.pushButton_estimateMean.clicked.connect(self.estimateMean)
         self.pushButton_estimateDFM.clicked.connect(self.estimateD)
         self.pushButton_finally.clicked.connect(self.finishAll)
-        ...
         
     def addNewRow(self):
         noOfRow = self.tableWidget.rowCount()
         self.tableWidget.insertRow(noOfRow)
         
-        ...
     def comparedecimal(self, num):
         if "." in num:
             oldLength = len(num[num.index(".")+1:])
@@ -67,31 +64,24 @@ class MainWindow(QMainWindow):
                 return num
         else:
             return num
-                
-            
-    
-        
+
     def estimate(self):
-        
-        classBoundaryLsit = []
-        
-        for i in range(1):
-            try:
-                value = self.tableWidget.item(i, 0).text()
-                value = value.split("-")
-                value = [i.strip(" ") for i in value]
-                a, b = int(value[0]), int(value[1])
-                diff = (b - a) + 1
-            except AttributeError:
-                QMessageBox.critical(self, "Invalid Input", "Class Group cannot be Empty")
-                return
-            except ValueError:
-                QMessageBox.critical(self, "Invalid Input", "Class Group should be in the format\n'A - B' where A is less than B and\nboth variables are integers" )
-                return
-            except IndexError:
-                QMessageBox.critical(self, "Invalid Input - Wrong Format", "Class Group should be in the format\n'A - B' where A is less than B and\nboth variables are integers" )
-                return
-                
+        try:
+            value = self.tableWidget.item(0, 0).text()
+            value = value.split("-")
+            value = [i.strip(" ") for i in value]
+            a, b = int(value[0]), int(value[1])
+            diff = (b - a) + 1
+        except AttributeError:
+            QMessageBox.critical(self, "Invalid Input", "Class Group cannot be Empty")
+            return
+        except ValueError:
+            QMessageBox.critical(self, "Invalid Input", "Class Group should be in the format\n'A - B' where A is less than B and\nboth variables are integers" )
+            return
+        except IndexError:
+            QMessageBox.critical(self, "Invalid Input - Wrong Format", "Class Group should be in the format\n'A - B' where A is less than B and\nboth variables are integers" )
+            return
+            
         
         noOfRow = self.tableWidget.rowCount()
         for i in range(noOfRow - 1):
