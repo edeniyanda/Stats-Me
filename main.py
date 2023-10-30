@@ -120,7 +120,6 @@ class MainWindow(QMainWindow):
     def checkFStatus(self):
         noOfRow = self.tableWidget.rowCount()
 
-        freqList = []
         for i in range(noOfRow):
             try:
                 value = self.tableWidget.item(i, 3).text()
@@ -175,8 +174,6 @@ class MainWindow(QMainWindow):
             self.finishAll()            
         except:
             ...
-        
-        ...
     
     def estimateD(self):
         noOfRow = self.tableWidget.rowCount()
@@ -229,8 +226,6 @@ class MainWindow(QMainWindow):
         varVal = round(self.sd, self.dp)
         varianceToDisplay = partial(self.comparedecimal, str(varVal))
         self.sd_label.setText(varianceToDisplay()) 
-           
-
         
     def finishAll(self):
         self.estimateD2()

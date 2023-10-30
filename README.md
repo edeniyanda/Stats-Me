@@ -44,8 +44,8 @@ To run StatMaster on your local machine, follow these steps:
 
 ## Contributing
 I welcome contributions! If you'd like to improve this project, open a pull request
-## Screenshot
 
+## Screenshot
 ![Stats Me Demo](images/DEMO.PNG)
 
 ## License
