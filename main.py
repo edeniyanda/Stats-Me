@@ -7,7 +7,7 @@ from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.uic import loadUi
 from qdarktheme import setup_theme, enable_hi_dpi
 from time import sleep
-
+from appresources import fagainstx
 
 def get_resource_path(relative_path):
     """
@@ -56,7 +56,24 @@ class MainWindow(QMainWindow):
         self.pushButton_estimateDFM.clicked.connect(self.estimateD)
         self.pushButton_finally.clicked.connect(self.finishAll)
         self.pushButton_start.clicked.connect(self.delay_screen)
+        self.pushButton_fagainstx.clicked.connect(self.plotfagainstx)
+    
+    def plotfagainstx(self):
+        noOfRow = self.tableWidget.rowCount()
+        x_axis = []
+        y_axis = []
+        for i in range(noOfRow):
+            val = self.tableWidget.item(i, 2).text()
+            x_axis.append(val)
+        for i in range(noOfRow):
+            val = self.tableWidget.item(i, 3).text()
+            y_axis.append(int(val))
         
+        plotinst = fagainstx(x_axis, y_axis)
+        plotinst.plot()
+        
+    
+      
     def addNewRow(self):
         noOfRow = self.tableWidget.rowCount()
         self.tableWidget.insertRow(noOfRow)
@@ -149,6 +166,9 @@ class MainWindow(QMainWindow):
             
         # Enable Extimate Mean Button
         self.pushButton_estimateMean.setEnabled(True)
+        # Enabled Visualize f against x button
+        self.pushButton_fagainstx.setEnabled(True)
+
             
    
     def estimateMean(self):
