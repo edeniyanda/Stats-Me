@@ -41,7 +41,6 @@ To run StatMaster on your local machine, follow these steps:
 -   Launch the application and interact with the user-friendly GUI to perform your statistical calculations.
 -   Enter your data, configure settings, and view the results in real-time.
 -   Use the dark theme for a more comfortable and stylish experience.\
-
 ## Contributing
 I welcome contributions! If you'd like to improve this project, open a pull request
 

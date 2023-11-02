@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QTableWidgetItem, QMessag
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.uic import loadUi
 from qdarktheme import setup_theme, enable_hi_dpi
+from time import sleep
 
 
 def get_resource_path(relative_path):
@@ -27,6 +28,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.ui = loadUi(get_resource_path('StatsMEUI.ui'),self)
+        self.tabWidget.setCurrentIndex(0)
         self.spinBox_dp.setValue(2)
         self.dp = self.spinBox_dp.value()
         self.handleButtonPressed()
@@ -36,9 +38,14 @@ class MainWindow(QMainWindow):
         self.mean = 0
         self.variance = 0
         self.sd = 0
-        
+    
+    
+    def delay_screen(self):
+        sleep(0.7)  
+        self.tabWidget.setCurrentIndex(1)
         
     def handleUiChanges(self):
+        self.tabWidget.tabBar().setVisible(False)
         self.spinBox_dp.valueChanged.connect(self.dp_changed)
         
     def handleButtonPressed(self):
@@ -48,6 +55,7 @@ class MainWindow(QMainWindow):
         self.pushButton_estimateMean.clicked.connect(self.estimateMean)
         self.pushButton_estimateDFM.clicked.connect(self.estimateD)
         self.pushButton_finally.clicked.connect(self.finishAll)
+        self.pushButton_start.clicked.connect(self.delay_screen)
         
     def addNewRow(self):
         noOfRow = self.tableWidget.rowCount()
