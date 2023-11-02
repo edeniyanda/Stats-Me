@@ -128,6 +128,8 @@ class MainWindow(QMainWindow):
             ans = (a - 0.5, b + 0.5)
             
             self.tableWidget.setItem( i, 1, QTableWidgetItem(str(ans[0]) + " - " + str(ans[1])))
+            item = self.tableWidget.item(i, 1)
+            item.setFlags(item.flags() ^ 32)  # 32 is the flag for ItemIsEditable
             ...
 
         for i in range(noOfRow):
@@ -137,6 +139,8 @@ class MainWindow(QMainWindow):
             a, b = int(value[0]), int(value[1])
             ans = (a + b) / 2
             self.tableWidget.setItem( i, 2, QTableWidgetItem(str(ans)))
+            item = self.tableWidget.item(i, 2)
+            item.setFlags(item.flags() ^ 32)  # 32 is the flag for ItemIsEditable
           
         # Enable Button that will estiamte fx
         self.pushButton_estimatefx.setEnabled(True)
