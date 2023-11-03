@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
         self.pushButton_estimatefx.setEnabled(False)
         self.pushButton_finally.setEnabled(False)
         self.mean = 0
+        self.median = 0
         self.variance = 0
         self.sd = 0
     
@@ -97,6 +98,7 @@ class MainWindow(QMainWindow):
             value = [i.strip(" ") for i in value]
             a, b = int(value[0]), int(value[1])
             diff = (b - a) + 1
+            self.diff = diff
         except AttributeError:
             QMessageBox.critical(self, "Invalid Input", "Class Group cannot be Empty")
             return
@@ -259,10 +261,48 @@ class MainWindow(QMainWindow):
         varianceToDisplay = partial(self.comparedecimal, str(varVal))
         self.sd_label.setText(varianceToDisplay()) 
         
+    def estimateMedian(self):
+        noOfRow = self.tableWidget.rowCount()
+        N = 0
+        median_freq = 0
+        for i in range(noOfRow):
+            f_val = int(self.tableWidget.item(i, 3).text())
+            N += f_val
+            
+        median_value_range = N / 2
+        sum_of_f = 0
+        
+        for index in range(noOfRow):
+            f_val = int(self.tableWidget.item(index, 3).text())
+            sum_of_f += f_val
+            if sum_of_f >= median_value_range:
+                median_freq = f_val
+                median_index = index
+                break
+              
+        cum_freq_before = 0
+        for m in range(noOfRow):
+            f_val = int(self.tableWidget.item(m, 3).text())
+            if m == median_index:
+                break
+            cum_freq_before += f_val
+            
+        l = float((self.tableWidget.item(median_index, 0).text()).split("-")[0])
+        class_width = self.diff - 1
+        
+        part1 = (((N/2) - cum_freq_before) / median_freq)
+        self.median  = (part1 * class_width) + l
+        medianToDisplay = partial(self.comparedecimal, str(self.median))
+        self.median_label.setText(str(medianToDisplay()))
+           
+
+            
     def finishAll(self):
         self.estimateD2()
         self.estimateFD2()
+        self.estimateMean()
         self.estimateVariance()
+        self.estimateMedian()
     
 enable_hi_dpi()
 app = QApplication(sys.argv)
