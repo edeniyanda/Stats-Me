@@ -292,10 +292,10 @@ class MainWindow(QMainWindow):
         
         part1 = (((N/2) - cum_freq_before) / median_freq)
         self.median  = (part1 * class_width) + l
-        medianToDisplay = partial(self.comparedecimal, str(self.median))
+        medianval = round(self.median, self.dp)
+        medianToDisplay = partial(self.comparedecimal, str(medianval))
         self.median_label.setText(str(medianToDisplay()))
            
-
             
     def finishAll(self):
         self.estimateD2()
