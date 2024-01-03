@@ -287,14 +287,55 @@ class MainWindow(QMainWindow):
                 break
             cum_freq_before += f_val
             
-        l = float((self.tableWidget.item(median_index, 0).text()).split("-")[0])
-        class_width = self.diff - 1
+        L = float((self.tableWidget.item(median_index, 1).text()).split("-")[0])
+        class_width = self.diff 
         
         part1 = (((N/2) - cum_freq_before) / median_freq)
-        self.median  = (part1 * class_width) + l
+        self.median  = (part1 * class_width) + L
         medianval = round(self.median, self.dp)
         medianToDisplay = partial(self.comparedecimal, str(medianval))
         self.median_label.setText(str(medianToDisplay()))
+
+    def estimateMode(self):
+        """
+            Mode = L + ((fm-fb)/((fm-fb) + fm -fa)) + C
+            
+            where:   
+                - L is the lower class boundary of the Modal class.
+                - fm is the frequancy of the modal class.
+                - fb is the frquancy before the modal class.
+                - fa is the frequcny after the modal class.
+                - C is the class interval of the Distribution
+        """
+        
+        noOfRow = self.tableWidget.rowCount()
+        # GEt all frequency in a list and get the maximum and the index of the maximum
+        ls_of_frequency = [int(self.tableWidget.item(i, 3).text()) for i in range(noOfRow)]
+        fm = max(ls_of_frequency)
+        index_fm = ls_of_frequency.index(fm)
+        
+        fb = int(self.tableWidget.item(index_fm - 1, 3).text())
+        fa = int(self.tableWidget.item(index_fm + 1, 3).text())
+        
+        C = self.diff
+        
+        L = float(self.tableWidget.item(index_fm, 1).text().split("-")[0])
+        
+        # Calculation
+        change1 = fm - fb
+        change2 = fm - fa
+        
+        parenthensis_cal = (change1 / (change1 + change2))
+        self.mode = L + (parenthensis_cal * C)
+        
+        
+        # Set mode value to approparite decimal place(s)
+        modeval = round(self.mode, self.dp)
+        modeToDisplay = partial(self.comparedecimal, str(modeval))
+        self.mode_label.setText(str(modeToDisplay()))
+        
+        
+        
            
             
     def finishAll(self):
@@ -303,6 +344,7 @@ class MainWindow(QMainWindow):
         self.estimateMean()
         self.estimateVariance()
         self.estimateMedian()
+        self.estimateMode()
     
 enable_hi_dpi()
 app = QApplication(sys.argv)
